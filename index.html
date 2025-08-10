@@ -1,0 +1,175 @@
+<head>
+
+</head>
+
+<style>
+
+    body {
+        text-align: center; /* Centre le texte globalement */
+        font-family: Arial, sans-serif;
+        background-color: blueviolet;
+    }
+
+    .choix {
+        display: flex;
+        justify-content: center; /* Centre horizontalement l'ensemble */
+        align-items: center;     /* Aligne verticalement le VS */
+        gap: 50px; /* Espace entre les colonnes et le VS */
+        margin-top: 20px;
+    }
+
+    .bloc {
+        display: flex;
+        flex-direction: column; /* Texte au-dessus de l'image */
+        align-items: center;     /* Centre dans la colonne */
+    }
+
+    .choix img {
+        width: 300px; /* Taille des images */
+    }
+
+    .vs {
+        font-size: 70px;
+        font-weight: bold;
+        color: red;
+    }
+
+    .propositions img {
+        width: 300px; /* Taille des images */
+        border-color: azure;
+    }
+</style>
+
+<body>
+    <h1 id="titre">Pierre feuille ciseaux</h1>
+
+    <div class="choix">
+        <div class="bloc">
+            <p>Votre choix :</p>
+            <img src="question.png" id="question_moi">
+        </div>
+
+        <div class="vs">VS</div>
+
+        <div class="bloc">
+            <p>Choix adverse :</p>
+            <img src="question.png" id="question_adverse">
+        </div>
+    </div>
+
+    <h1 id="choix">Faites un choix</h1>
+    <div class="propositions">
+        <img src="pierre.png" alt="pierre" id="buttonPierre" onclick="clickPierre()">
+        <img src="feuille.png" alt="feuille" id="buttonFeuille" onclick="clickFeuille()">
+        <img src="ciseaux.png" alt="ciseaux" id="buttonCiseaux" onclick="clickCiseaux()">
+    </div>
+
+    <script>
+
+        let played = "";
+
+        function clickPierre(){
+            if (played == ""){
+                played = "pierre";
+                removeImages();
+            }
+        }
+
+        function clickFeuille(){
+            if(played == ""){
+                played = "feuille";
+                removeImages();
+            }
+        }
+
+        function clickCiseaux(){
+            if(played == ""){
+                played = "ciseaux";
+                removeImages();
+            }
+        }
+
+        function removeImages(clicked){
+            var pierre = document.getElementById("buttonPierre");
+            var feuille = document.getElementById("buttonFeuille");
+            var ciseaux = document.getElementById("buttonCiseaux");
+            pierre.parentNode.removeChild(pierre);
+            feuille.parentNode.removeChild(feuille)
+            ciseaux.parentNode.removeChild(ciseaux);
+
+
+            document.getElementById("choix").innerHTML = "Vous avez choisi : " + played;
+            document.getElementById("question_moi").src = played + ".png";
+
+            const randomDecimal = Math.floor(Math.random() * 3) + 1;
+
+            let ennemy_play = "";
+            switch (randomDecimal) {
+                case 1:
+                    ennemy_play = "pierre";
+                    break;
+                case 2:
+                    ennemy_play = "feuille";
+                    break;
+                case 3:
+                    ennemy_play = "ciseaux";
+                    break;
+            
+                default:
+                    ennemy_play = "pierre";
+                    break;
+            }
+
+            rouletteAdverse(ennemy_play)
+
+        }
+            
+        function rouletteAdverse(ennemy_play) {
+            ennemy_play_img = ennemy_play + ".png"
+            const images = ["feuille.png", "pierre.png", "ciseaux.png"];
+            let intervalId;
+            let i = 0;
+
+            // Change l'image rapidement toutes les 100 ms
+            intervalId = setInterval(() => {
+                document.getElementById("question_adverse").src = images[i];
+                i = (i + 1) % images.length; // boucle sur les images
+            }, 100);
+
+            // Arrête la roulette après 1,5 secondes et affiche le vrai choix
+            setTimeout(() => {
+                clearInterval(intervalId);
+                document.getElementById("question_adverse").src = ennemy_play_img;
+                checkWin(ennemy_play, played);
+            }, 1500);
+
+        }
+
+        function checkWin(ennemy_play, played){
+            let result = "";
+            // Règles : chaque clé bat la valeur correspondante
+            const regles = {
+                pierre: "ciseaux",
+                feuille: "pierre",
+                ciseaux: "feuille"
+            };
+
+            if (played === ennemy_play){
+                result = "tie";
+            } else if (regles[played] === ennemy_play){
+                result = "win";
+            } else {
+                result = "lost";
+            }
+            if (result === "win"){
+                document.getElementById("choix").innerHTML = "Victoire !";
+            } else if (result === "lost"){
+                document.getElementById("choix").innerHTML = "Défaite...";
+            } else if (result === "tie"){
+                document.getElementById("choix").innerHTML = "Égalité."
+            }
+        }
+
+    </script>
+
+</body>
